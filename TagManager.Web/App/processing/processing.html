@@ -1,0 +1,95 @@
+﻿<md-content layout-padding>
+    <div>
+        <span class="clickable md-title" ui-sref="gallery">Gallery</span>
+        <i class="mdi mdi-chevron-right"></i><span class="clickable md-title" ui-sref="media-item({id: vm.mediaItemId})">{{vm.mediaItem.title}}</span>
+        <i class="mdi mdi-chevron-right"></i><span class="clickable md-title" ui-sref="processing({id: vm.mediaItemId})">Processing</span>
+    </div>
+    <div layout="row">
+        <md-card flex="40" layout-padding>
+            <md-card-title>
+                <md-card-title-text>
+                    <span class="md-headline">Preprocessed tags</span>
+                </md-card-title-text>
+            </md-card-title>
+            <md-card-content>
+                <div layout="row" layout-align="begin center" ng-repeat="tag in vm.preprocessedTags">
+                    <md-input-container flex="70">
+                        <input aria-label="Tag value" ng-class="{'incorrect' : !tag.isSpelledCorrect}" ng-model="tag.tagValue" />
+                    </md-input-container>
+                    <div flex="30">
+                        <md-menu ng-if="!tag.isSpelledCorrect && tag.suggestions">
+                            <md-button aria-label="Open suggestions" class="md-icon-button" ng-click="vm.openMenu($mdOpenMenu, $event)">
+                                <i class="mdi mdi-arrow-down-drop-circle icon-20 incorrect"></i>
+                            </md-button>
+                            <md-menu-content width="4">
+                                <md-menu-item ng-repeat="sug in tag.suggestions">
+                                    <md-button ng-click="vm.setSuggestion(tag, sug)">{{sug}}</md-button>
+                                </md-menu-item>
+                            </md-menu-content>
+                        </md-menu>
+                        <md-button aria-label="Ignore tag" class="md-icon-button" ng-click="tag.ignored = !tag.ignored">
+                            <i class="mdi icon-20" ng-class="{'mdi-eye' : !tag.ignored, 'mdi-eye-off' : tag.ignored}"></i>
+                        </md-button>
+                        <md-button aria-label="Restore tag" class="md-icon-button" ng-click="vm.restoreTag(tag)" ng-if="tag.tagValue !== tag.originalTagValue">
+                            <i class="mdi mdi-undo icon-20"></i>
+                        </md-button>
+                    </div>
+                </div>
+            </md-card-content>
+        </md-card>
+
+        <div layout="column" flex="20" layout-align="center center">
+            <md-button class="md-raised md-primary" ng-click="vm.processTags()"><i class="mdi mdi-settings icon-20"></i> Process</md-button>
+        </div>
+
+        <md-card flex="40">
+            <md-card-title>
+                <md-card-title-text>
+                    <span class="md-headline">Result:</span>
+                </md-card-title-text>
+            </md-card-title>
+            <md-card-content flex>
+                <div ng-repeat="tg in vm.processedTagGroups" layout="row" flex class="tag-group">
+                    <div layout="column" flex>
+                        <span class="md-title">Group {{$index + 1}}</span>
+                        <span class="md-subhead"><b>Tags</b></span>
+                        <div>
+                            <div ng-repeat="t in tg.tags | orderBy:'-t.mediaTag === 0'" layout="row" class="tag-row">
+                                <label flex>{{t.value}}</label>
+                                <i class="mdi mdi-information icon-20" ng-if="t.mediaTag">
+                                    <md-tooltip md-direction="top">
+                                        {{t.mediaTag.value}} : {{vm.mediaTagTypes[t.mediaTag.type].name}}
+                                    </md-tooltip>
+                                </i>
+                                <md-button aria-label="Set value as media tag" class="md-icon-button" ng-click="vm.setValueAsMediaTag(tg, t)">
+                                    <i class="mdi mdi-subdirectory-arrow-left icon-20"></i>
+                                </md-button>
+                            </div>
+                        </div>
+                        <br />
+                        <span class="md-subhead"><b>MediaTag</b></span>
+                        <div layout="row" class="row-with-input">
+                            <div flex="50">
+                                <md-input-container md-no-float>
+                                    <input aria-label="Media tag value" ng-model="tg.mediaTag.value" placeholder="Value" ng-disabled="tg.mediaTag.id" />
+                                </md-input-container>
+                            </div>
+                            <div flex>
+                                <md-select aria-label="Media tag type" ng-model="tg.mediaTag.type" placeholder="Type" class="md-no-underline" ng-disabled="tg.mediaTag.id">
+                                    <md-option ng-repeat="type in vm.mediaTagTypes track by type.id" ng-value="type.id">{{type.name}}</md-option>
+                                </md-select>
+                            </div>
+                            <md-button aria-label="Clear media tag" class="md-icon-button" ng-click="vm.clearMediaTag(tg)" ng-if="tg.mediaTag">
+                                <i class="mdi mdi-undo-variant icon-20"></i>
+                            </md-button>
+                        </div>
+                        <md-divider ng-if="!$last"></md-divider>
+                    </div>
+                </div>
+            </md-card-content>
+            <md-card-actions layout="row" layout-align="end center" ng-if="vm.anyMediaTags()">
+                <md-button aria-label="Save media tags" class="md-raised md-primary" ng-click="vm.saveMediaTags()">Save</md-button>
+            </md-card-actions>
+        </md-card>
+    </div>
+</md-content>

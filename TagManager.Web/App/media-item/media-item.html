@@ -1,0 +1,63 @@
+﻿<md-content layout-padding>
+    <span class="clickable md-title" ui-sref="gallery">Gallery</span><i class="mdi mdi-chevron-right"></i><span class="clickable md-title" ui-sref="media-item({id: vm.mediaItemId})">{{vm.mediaItem.title}}</span>
+    <div layout="row">
+        <div flex="60" class="videogular-container">
+            <videogular vg-theme="vm.videoConfig.theme">
+                <vg-media vg-src="vm.videoConfig.sources"
+                          vg-tracks="vm.videoConfig.tracks">
+                </vg-media>
+                <vg-controls>
+                    <vg-play-pause-button></vg-play-pause-button>
+                    <vg-time-display>{{ currentTime | date:'mm:ss' }}</vg-time-display>
+                    <vg-scrub-bar>
+                        <vg-scrub-bar-current-time></vg-scrub-bar-current-time>
+                    </vg-scrub-bar>
+                    <vg-time-display>{{ timeLeft | date:'mm:ss' }}</vg-time-display>
+                    <vg-volume>
+                        <vg-mute-button></vg-mute-button>
+                        <vg-volume-bar></vg-volume-bar>
+                    </vg-volume>
+                    <vg-fullscreen-button></vg-fullscreen-button>
+                </vg-controls>
+            </videogular>
+        </div>
+        <div flex="40">
+            <form>
+                <md-input-container class="md-block">
+                    <label>Description</label>
+                    <textarea ng-model="vm.mediaItem.description" readonly></textarea>
+                </md-input-container>
+            </form>
+        </div>
+    </div>
+    <div>
+        <md-button class="md-raised md-primary" ui-sref="processing({id: vm.mediaItemId})" ng-if="vm.processingAllowed">Process</md-button>
+        <h4>Raw tags</h4>
+        <md-grid-list flex="60" md-cols="5" md-gutter="4px" md-row-height="4:1">
+            <md-grid-tile ng-repeat="t in vm.mediaItem.tags | orderBy:'tagValue'" style="background: silver; border:solid 1px"><div>{{t.tagValue}}</div></md-grid-tile>
+        </md-grid-list>
+    </div>
+    <div ng-if="vm.processingFinished">
+        <h4>Relevant catalog items</h4>
+        <div ng-if="vm.relevantItems.length === 0">
+            There aren't any relevant catalog items for this item (yet).
+        </div>
+        <md-list>
+            <md-list-item ng-repeat="relItem in vm.relevantItems | orderBy:'-mediaTags.length'" class="md-3-line" ng-if="vm.relevantItems.length > 0">
+                <img class="md-avatar" />
+                <div class="md-list-item-text" layout="column">
+                    <h3 class="clickable" ui-sref="media-item({id: relItem.id})">{{vm.itemTypes[relItem.typeId].name}} - {{ relItem.title }}</h3>
+                
+                <md-chips  ng-model="relItem.mediaTags" readonly="true">
+                    <md-chip-template ><span class="md-caption">{{ $chip.value }}</span></md-chip-template>
+                </md-chips>
+                    
+                    <p>{{ relItem.description }}</p>
+                </div>
+            </md-list-item>
+
+        </md-list>
+        <h4>External sources</h4>
+        <span>This feature is coming soon..</span>
+    </div>
+</md-content>

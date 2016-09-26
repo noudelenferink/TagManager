@@ -1,0 +1,16 @@
+{
+  "name": "TagManager",
+  "private": true,
+  "dependencies": {
+   "angular": "^1.5.8",
+   "angular-filter": "^0.5.11",
+    "angular-material": "^1.1.1",
+    "ui-router": "^0.3.1",
+    "jquery": "^3.1.0",
+    "mdi": "^1.7.22",
+    "ng-storage": "^0.4.2",
+    "videogular": "~1.4.4",
+    "videogular-themes-default": "~1.4.4",
+    "videogular-controls": "~1.4.4"
+  }
+}
